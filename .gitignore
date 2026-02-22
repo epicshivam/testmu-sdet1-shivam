@@ -1,0 +1,23 @@
+# Node modules and package logs
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn.lock
+package-lock.json # (Optional: keep this if you want to lock dependencies, ignore if you use yarn/pnpm)
+
+# Playwright specific directories
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Environment variables (Never commit secrets!)
+.env
+.env.local
+.env.*.local
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
