@@ -1,102 +1,87 @@
-Feature: Production-Grade Web Login System Regression Coverage
+Feature: Login Module Authentication
   As a registered user
-  I want to securely authenticate with the system
-  So that I can access my account and protected resources
+  I want to log into the web application
+  So that I can access my account securely
 
-  Background:
-    Given the web application is running and accessible
-    And the user navigates to the login page
+Scenario: Successful login with valid credentials
+    Given the user is on the login page
+    When the user enters a valid username
+    And the user enters the correct password
+    And clicks on the login button
+    Then the user should be redirected to the dashboard
+    And a success message should be displayed
 
-  Scenario: 1. Successful login with valid credentials
-    Given the user has an active account with username "active_user" and password "ValidP@ssw0rd123!"
-    When the user enters the username "active_user"
-    And the user enters the password "ValidP@ssw0rd123!"
-    And the user clicks the login button
-    Then the user should be successfully authenticated
-    And the system should redirect the user to the secure dashboard
-    And an active session token should be generated in the browser cookies
+Scenario: Successful login with valid credentials using Enter key
+    Given the user is on the login page
+    When the user enters a valid username
+    And the user enters the correct password
+    And presses the Enter key
+    Then the user should be redirected to the dashboard
 
-  Scenario Outline: 2, 3, 4, 5. Login failures due to invalid credentials or empty fields
-    When the user enters the username "<username>"
-    And the user enters the password "<password>"
-    And the user clicks the login button
-    Then the user should not be authenticated
-    And the system should display the error message "<expected_error>"
+Scenario: Login with incorrect password
+    Given the user is on the login page
+    When the user enters a valid username
+    And enters an incorrect password
+    And clicks on the login button
+    Then an error message "Invalid username or password" should be displayed
     And the user should remain on the login page
-    And no session token should be generated
 
-    Examples:
-      | username      | password          | expected_error                   |
-      | active_user   | WrongPassword1!   | Invalid username or password     |
-      | unknown_user  | ValidP@ssw0rd123! | Invalid username or password     |
-      | unknown_user  | WrongPassword1!   | Invalid username or password     |
-      |               | ValidP@ssw0rd123! | Username field cannot be empty   |
-      | active_user   |                   | Password field cannot be empty   |
-      |               |                   | Username and password required   |
+Scenario: Login with unregistered username
+    Given the user is on the login page
+    When the user enters an unregistered username
+    And enters any password
+    And clicks on the login button
+    Then an error message "Invalid username or password" should be displayed
 
-  Scenario Outline: 6. Boundary input validation for username and password lengths
-    When the user enters the username "<username>"
-    And the user enters the password "<password>"
-    And the user clicks the login button
-    Then the user should not be authenticated
-    And the system should display the validation error "<expected_error>"
+Scenario: Login with empty fields
+    Given the user is on the login page
+    When the user clicks on the login button without entering credentials
+    Then validation messages should be displayed for required fields
 
-    Examples:
-      | username                                             | password                                                                                                                                  | expected_error                                      |
-      | ab                                                   | ValidP@ssw0rd123!                                                                                                                         | Username must be between 3 and 50 characters        |
-      | thisusernameiswaytoolongandexceedsthemaximumlength51 | ValidP@ssw0rd123!                                                                                                                         | Username must be between 3 and 50 characters        |
-      | active_user                                          | Short1!                                                                                                                                   | Password must be between 8 and 128 characters       |
-      | active_user                                          | SuperLongPasswordThatExceedsTheMaximumAllowedLengthOfOneHundredAndTwentyEightCharactersByBeingUnnecessarilyAndExcessivelyLongString12345! | Password must be between 8 and 128 characters       |
+Scenario: Navigate to Forgot Password page
+    Given the user is on the login page
+    When the user clicks on the "Forgot Password" link
+    Then the user should be redirected to the password reset page
 
-  Scenario Outline: 7, 8. Security validation against SQL injection and Cross-Site Scripting (XSS)
-    When the user enters the username "<malicious_username>"
-    And the user enters the password "<malicious_password>"
-    And the user clicks the login button
-    Then the user should not be authenticated
-    And the application should safely sanitize or reject the input
-    And the system should display the generic error message "Invalid username or password"
-    And a security event should be logged in the system audit trail
+Scenario: Submit forgot password with registered email
+    Given the user is on the password reset page
+    When the user enters a registered email address
+    And clicks on the submit button
+    Then a password reset link should be sent to the registered email
+    And a confirmation message should be displayed
 
-    Examples:
-      | malicious_username             | malicious_password             |
-      | admin' OR '1'='1               | password                       |
-      | admin" OR 1=1 --               | password                       |
-      | active_user                    | ' OR '1'='1                    |
-      | <script>alert('xss')</script>  | ValidP@ssw0rd123!              |
-      | active_user                    | "><img src=x onerror=alert(1)> |
+Scenario: Submit forgot password with unregistered email
+    Given the user is on the password reset page
+    When the user enters an unregistered email address
+    And clicks on the submit button
+    Then an error message "Email not found" should be displayed
 
-  Scenario: 9. Account lockout after 5 consecutive failed login attempts (Brute-force protection)
-    Given the user has an active account with username "bruteforce_target"
-    And the account is currently unlocked
-    When the user attempts to log in with an incorrect password 5 times consecutively
-    Then the system should immediately lock the account "bruteforce_target"
-    And the system should display the error message "Account locked due to 5 consecutive failed attempts."
-    When the user attempts to log in with the correct password "ValidP@ssw0rd123!" on the 6th attempt
-    Then the user should not be authenticated
-    And the system should display the error message "Account locked. Please reset your password or contact support."
+Scenario: Automatic session expiry after inactivity
+    Given the user is logged into the application
+    When the user remains inactive for the configured session timeout period
+    Then the session should expire
+    And the user should be redirected to the login page
+    And a message "Session expired. Please login again." should be displayed
 
-  Scenario: 10. Session expiration after 15 minutes of inactivity
-    Given the user is successfully logged into the application
-    And the user is currently viewing the secure dashboard
-    When the user remains completely inactive for 15 minutes and 1 second
-    And the user attempts to click a link to view user profile details
-    Then the server should terminate the user's active session
-    And the system should automatically redirect the user to the login page
-    And the system should display the informative message "Your session has expired due to 15 minutes of inactivity. Please log in again."
+Scenario: Access secured page after session expiry
+    Given the user session has expired
+    When the user tries to access a secured page URL directly
+    Then the user should be redirected to the login page
 
-  Scenario: 11a. Forgot password flow with a registered email address
-    Given the user clicks on the "Forgot Password" link on the login page
-    And the system navigates to the password recovery page
-    When the user enters a registered email address "registered_user@example.com"
-    And the user clicks the "Send Reset Link" button
-    Then the system should generate a secure, time-bound, single-use password reset token
-    And the system should dispatch a password reset email to "registered_user@example.com"
-    And the system should display the message "If an account exists for that email, a password reset link has been sent."
+Scenario: Account lockout after multiple failed login attempts
+    Given the user is on the login page
+    When the user enters an incorrect password 5 consecutive times
+    Then the account should be temporarily locked
+    And an error message "Account locked due to multiple failed attempts" should be displayed
 
-  Scenario: 11b. Forgot password flow with an unregistered email address (Prevent User Enumeration)
-    Given the user clicks on the "Forgot Password" link on the login page
-    And the system navigates to the password recovery page
-    When the user enters an unregistered email address "unregistered_user@example.com"
-    And the user clicks the "Send Reset Link" button
-    Then the system should not dispatch any email
-    And the system should display the exact same message "If an account exists for that email, a password reset link has been sent."
+Scenario: Login attempt during lockout period
+    Given the user account is locked
+    When the user attempts to login with correct credentials
+    Then login should be denied
+    And a message "Account is locked. Try again later." should be displayed
+
+Scenario: Login after lockout duration expires
+    Given the user account was locked
+    And the lockout duration has passed
+    When the user enters valid credentials
+    Then the user should be able to login successfully

@@ -1,78 +1,39 @@
+## Intial Prompt for generating base folder sturcture
+
+Help me step by step to generate a folder structure in playwright/javascript that follow a basic production grade ready framework pattern.
+
+
 ## Login Module – Version 1
 
-You are a senior QA automation engineer designing regression coverage for a production-grade web login system.
-
-Generate comprehensive, production-level Gherkin test scenarios for a secure login module.
-
-System assumptions:
-- Web-based application
-- Username + password authentication
-- Lock account after 5 consecutive failed login attempts
-- Session expires after 15 minutes of inactivity
-- Forgot password sends reset link to registered email
-
-Requirements to cover:
-1. Valid login
-2. Invalid username
-3. Invalid password
-4. Both username and password invalid
-5. Empty fields
-6. Boundary input validation (min/max length)
-7. SQL injection attempt
-8. XSS attempt
-9. Brute-force lockout behavior
-10. Session expiry behavior
-11. Forgot password flow
-
-Constraints:
-- Use proper Gherkin syntax (Feature, Scenario, Given, When, Then)
-- Include both positive and negative scenarios
-- Include security-focused scenarios
-- Use realistic test steps
-- Do not include explanations or commentary
-- Output strictly valid Gherkin
-
-The scenarios should reflect regression-level coverage, not superficial examples.
-
+Write Gherkin test cases for a web application Login module. I need you to cover the following scenarios: valid login, invalid credentials, forgot password, session expiry, and brute-force lockout.
 
 ## Login Module – Version 2
 
-You are a senior SDET designing maintainable BDD regression scenarios for a production-grade authentication system.
+Act as an Expert SDET. Generate comprehensive BDD test cases in Gherkin format for a web application's Login module.
 
-Generate structured Gherkin scenarios for a secure login module.
+Strictly cover these 5 scenarios:
 
-Enhancements required:
-- Use Background section for common navigation steps
-- Avoid repetitive Given steps
-- Use parameterized examples where appropriate
-- Separate functional scenarios from security scenarios
-- Include clear expected system behavior after lockout
-- Include expected HTTP/session behavior for expiry
-- Ensure steps are automation-friendly (clear locators, clear actions)
+Valid login
 
-System assumptions:
-- Web-based application
-- Username + password authentication
-- Lock account after 5 consecutive failed login attempts
-- Session expires after 15 minutes of inactivity
-- Forgot password sends reset link to registered email
+Invalid credentials
 
-Cover:
-- Positive scenarios
-- Negative scenarios
-- Security edge cases
-- Boundary validation
+Forgot password
 
-Output strictly valid Gherkin.
-No explanations.
+Session expiry
 
+Brute-force lockout
 
-### Observations After Version 1
-- Output had repetitive navigation steps.
-- Security scenarios were not clearly separated.
-- Some steps were not automation-friendly.
+Constraints:
 
-### Improvements in Version 2
-- Introduced Background block.
-- Structured scenarios for maintainability.
-- Added automation-friendly step clarity.
+Use standard Gherkin syntax (Feature, Background, Scenario, Given, When, Then).
+
+Use a 'Scenario Outline' with an Examples table for the "invalid credentials" test to cover multiple variations (wrong username, wrong password, empty fields).
+
+Apply appropriate test tags (e.g., @smoke, @regression, @security) to each scenario.
+
+Ensure the steps are declarative (focusing on business behavior) rather than strictly imperative (clicking specific button IDs).
+Output only the raw Gherkin code without any introductory text.
+
+# Login Module Note 
+
+My initial prompt (V1) produced overly simplistic Gherkin that lacked data-driven testing and proper organization. It didn't utilize Scenario Outlines for the invalid credentials, meaning I would have had to write duplicate code for different failure states. In V2, I applied persona framing ("Act as an Expert SDET"), enforced constraints for structural elements like tags and background steps, and explicitly requested a Scenario Outline with a data table, resulting in a much more scalable and professional feature file.
