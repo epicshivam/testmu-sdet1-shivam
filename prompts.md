@@ -70,3 +70,35 @@ Output only the raw Gherkin code.
 # Dashboard Module Note 
 
 My first prompt (V1) resulted in very generic tests. For example, it wrote a responsive layout test but didn't define any viewport dimensions, which is useless for automation. It also didn't specify roles for the permission test. In V2, I engineered the prompt to explicitly demand multiple viewports (mobile, tablet, desktop) via a Scenario Outline and specifically requested a comparison between "Admin" and "Standard User" roles, making the resulting Gherkin much closer to what a real SDET would write.
+
+## API Module - Version 1
+
+Write Gherkin test cases for a REST API. I need to cover auth token validation, CRUD operations, error handling for 4xx and 5xx, rate limiting, and schema validation.
+
+## API Module - Version 2
+
+Act as an Expert API Test Automation Engineer. Generate comprehensive BDD test cases in Gherkin format for a REST API.
+
+Cover these 5 specific areas:
+
+Auth token validation (valid, invalid, expired)
+
+CRUD operations (Create, Read, Update, Delete) for a specific resource, utilizing a Scenario Outline.
+
+Error handling for client (4xx) and server (5xx) status codes.
+
+Rate limiting (specifically HTTP 429 Too Many Requests).
+
+JSON Schema validation for the response body.
+
+Constraints:
+
+Use standard Gherkin syntax and apply appropriate API-specific tags (e.g., @api, @auth, @schema).
+
+Steps must explicitly reference HTTP methods (GET, POST, PUT, DELETE), status codes, and JSON payloads rather than abstract UI concepts.
+
+Output only the raw Gherkin code without any introductory text.
+
+## REST API Module Note 
+
+My initial prompt (V1) produced tests that were too abstract and read like UI tests. They lacked the technical terminology necessary for backend automation. In V2, I framed the persona as an API Specialist and enforced constraints to include specific HTTP methods (GET, POST), exact status codes (like 429 for rate limiting), and explicitly requested JSON Schema validation, resulting in Gherkin that maps perfectly to API testing libraries like Playwright or RestAssured.
