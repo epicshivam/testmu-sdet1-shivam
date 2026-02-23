@@ -7,7 +7,6 @@ package-lock.json # (Optional: keep this if you want to lock dependencies, ignor
 
 # Playwright specific directories
 test-results/
-playwright-report/
 blob-report/
 playwright/.cache/
 
